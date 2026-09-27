@@ -1,103 +1,83 @@
-# Traffic Light System — Angular 21 Technical Assessment
+# Traffic Light System — Angular 21
 
-A robust, safety-first, standalone **Traffic Light System** built in **Angular 21** adhering to strict state-machine modeling, invariant verification, and modern reactive Angular patterns.
+A robust, safety-first four-way intersection traffic light controller built with **Angular 21** using native Standalone Components, Angular Signals, TypeScript, HTML, and CSS.
 
 ---
 
-## 1. Overview
+## Overview
 
 This application simulates a real-world four-way intersection with four physical traffic lights:
 * **North** and **South** (facing pair)
 * **East** and **West** (facing pair)
 
-The primary focus of this assessment is **correct state management**, **prevention of invalid states**, **fail-safe execution**, and **clean separation of concerns** between business logic and UI presentation. No external UI or state-management libraries (such as Angular Material, Bootstrap, Tailwind, or NgRx) are used—only native Angular 21 Standalone Components, Angular Signals, TypeScript, HTML, and CSS.
+The system is designed with a strict state-machine architecture that enforces traffic safety invariants, validates state transitions before mutating state, and guarantees synchronization between opposing lights. No third-party UI or state-management libraries are used—only native Angular 21 primitives.
 
 ---
 
-## 2. Architecture & Separation of Concerns
+## How to install dependencies
 
-The solution adheres to a strict unidirectional data flow and multi-tiered safety architecture:
+### Prerequisites
+* **Node.js**: v20 or higher
+* **npm**: v10 or higher
 
+### Installation
+Run the following command in the project root:
+
+```bash
+npm install
+```
+
+---
+
+## How to run the project
+
+Start the local development server:
+
+```bash
+npm start
+```
+
+Once the build is complete, open your browser and navigate to:
 ```text
-                  +--------------------------------+
-                  |         User Interface         |
-                  |  (App & TrafficLightComponent) |
-                  +---------------+----------------+
-                                  |
-               User Action Triggers / Signal Reads
-                                  |
-                                  v
-                  +--------------------------------+
-                  |     TrafficSystemService       |
-                  |        (State Machine)         |
-                  +---------------+----------------+
-                                  |
-               requestTransition(nextState) Pre-Check
-                                  |
-                                  v
-                  +--------------------------------+
-                  |    Safety Validation Engine    |
-                  | - isSafeState()                |
-                  | - isValidTransition()          |
-                  | - isValidAxisTransition()      |
-                  +---------------+----------------+
-                                  |
-                        Valid?    |
-                       +----------+----------+
-                       |                     |
-                      YES                   NO
-                       |                     |
-                       v                     v
-            Apply State Signal Mutation   Reject Transition
-            (state.set(nextState))        (Log warning, state remains safe)
+http://localhost:4200/
 ```
-
-1. **Presentation Layer (`src/app/traffic-light/`, `src/app/app.ts`)**:
-   - Pure UI components using `ChangeDetectionStrategy.OnPush`.
-   - Render the physical fixtures (lenses, visors, glowing illumination) and road markings.
-   - Display real-time telemetry (active phase, power status, invariant verification status).
-   - Trigger user commands (`turnOn()`, `turnOff()`, `nextState()`).
-
-2. **State Management & State Machine (`src/app/traffic-system/traffic-system.service.ts`)**:
-   - Central authority of application truth using Angular Signals (`signal<TrafficSystemState>`).
-   - Controls lifecycle, timers, and transitions.
-   - Houses computed signals for each physical light: `northLight`, `southLight`, `eastLight`, `westLight`.
-
-3. **Validation & Invariant Safety (`TrafficSystemService.isValidTransition`)**:
-   - Enforces the **Safety-First Principle**: Validation executes **before** state mutation.
-   - Unsafe requests are rejected immediately, preserving the current valid state without glitching.
 
 ---
 
-## 3. State Model: Two Logical Axes vs Four Independent Variables
+## How to run tests
 
-### Why Two Logical Axes?
+Execute the complete automated unit test suite using Angular's built-in Vitest runner:
 
-A naive approach might store four independent mutable states:
-```typescript
-// ❌ Flawed / Bug-Prone Approach:
-north: LightState;
-south: LightState;
-east: LightState;
-west: LightState;
+```bash
+npm test -- --watch=false
 ```
-This flawed design yields $4^4 = 256$ state combinations, where almost all are dangerous or out-of-sync (e.g. North=GREEN while South=RED).
 
-### The Solution: Two Orthogonal Logical Axes
+To run tests in interactive watch mode during development:
+
+```bash
+npm test
+```
+
+---
+
+## Explanation of the state model
+
+### Two Orthogonal Logical Axes vs. Four Independent Variables
+
+Instead of tracking four separate variables (`north`, `south`, `east`, `west`), which would produce $4^4 = 256$ possible state combinations and risk opposing lights desynchronizing (e.g. North=GREEN while South=RED), the system groups facing lights into **two orthogonal logical axes**:
+
+1. **`northSouth` (Axis 1)**: Controls the North and South traffic flow.
+2. **`eastWest` (Axis 2)**: Controls the East and West traffic flow.
 
 ```typescript
-// ✅ Safe-by-Design Model:
 export interface TrafficSystemState {
   readonly northSouth: LightState;
   readonly eastWest: LightState;
 }
 ```
 
-The system models the intersection as **two orthogonal axes**:
-1. `northSouth` (Axis 1)
-2. `eastWest` (Axis 2)
+Each physical light derives its display state directly from its corresponding axis via reactive computed signals:
 
-Each physical light derives its displayed state directly from its parent axis via computed signals:
 ```typescript
 readonly northLight = computed(() => this._state().northSouth);
 readonly southLight = computed(() => this._state().northSouth);
@@ -105,111 +85,63 @@ readonly eastLight  = computed(() => this._state().eastWest);
 readonly westLight  = computed(() => this._state().eastWest);
 ```
 
-### Key Advantage
-It is **structurally impossible** for North and South (or East and West) to disagree. Pair synchronization is guaranteed at the architectural level rather than relying on error-prone UI checks.
+This ensures it is **structurally impossible** for North and South (or East and West) to disagree. Facing pair synchronization is guaranteed at the architectural level.
 
 ---
 
-## 4. Safety Rules & Invariants Enforced
+## Safe states / transitions
 
-The system strictly enforces the following eight core safety rules:
+### Standard Safe Operating Cycle
 
-1. **Paired Lights Synchronization**: North & South always match; East & West always match (enforced by the axis model).
-2. **Mutual Exclusion (No Simultaneous GREEN)**: `northSouth === GREEN && eastWest === GREEN` is strictly forbidden and rejected.
-3. **No Direct RED → GREEN**: Traffic on an axis cannot jump straight to GREEN without entering the transitional YELLOW phase first.
-4. **No Direct GREEN → RED**: Traffic on an axis cannot instantly stop without entering the warning YELLOW phase first.
-5. **Transitional YELLOW**: YELLOW is strictly a warning and transition state between RED and GREEN.
-6. **All-Inclusive OFF State**: When the system is OFF, all four physical lights must be dark (`northSouth === OFF && eastWest === OFF`). Mixed ON/OFF combinations are invalid.
-7. **Deterministic Safe Startup**: When powered ON from OFF, the system begins deterministically at `North/South: GREEN, East/West: RED` (`INITIAL_ON_STATE`). Startup directly into YELLOW is strictly rejected.
-8. **Clearance Phases (All-Red)**: The operating cycle contains dedicated clearance intervals where both axes are RED before granting GREEN to the cross axis.
-
----
-
-## 5. Recommended Safe Operating Cycle
-
-The application implements the predictable 8-phase cycle:
+The intersection follows a predictable 8-phase safe operating sequence:
 
 | Step | North/South | East/West | Description |
 |:---:|:---:|:---:|:---|
-| **0** | `GREEN` | `RED` | **Initial State**: North/South traffic flows; East/West holds |
-| **1** | `YELLOW` | `RED` | North/South warning to stop; East/West holds |
+| **0** | `GREEN` | `RED` | **Initial State**: North/South traffic flows; East/West holds RED |
+| **1** | `YELLOW` | `RED` | North/South warning to stop; East/West holds RED |
 | **2** | `RED` | `RED` | **All-Red Clearance**: Intersection clears safely |
-| **3** | `RED` | `YELLOW` | East/West signals upcoming release; North/South holds |
-| **4** | `RED` | `GREEN` | East/West traffic flows; North/South holds |
-| **5** | `RED` | `YELLOW` | East/West warning to stop; North/South holds |
+| **3** | `RED` | `YELLOW` | East/West warning/pre-clearance; North/South holds RED |
+| **4** | `RED` | `GREEN` | East/West traffic flows; North/South holds RED |
+| **5** | `RED` | `YELLOW` | East/West warning to stop; North/South holds RED |
 | **6** | `RED` | `RED` | **All-Red Clearance**: Intersection clears safely |
-| **7** | `YELLOW` | `RED` | North/South signals upcoming release; East/West holds |
+| **7** | `YELLOW` | `RED` | North/South warning/pre-clearance; East/West holds RED |
 
-*(Repeats back to Step 0)*
+*(Cycles back to Step 0)*
 
----
+### Permitted Axis Transitions
 
-## 6. Project Structure
+State changes on each axis must transition through intermediate buffer phases:
+* **RED → YELLOW → GREEN**
+* **GREEN → YELLOW → RED**
+* Direct **RED ↔ GREEN** transitions are strictly rejected.
 
-```text
-src/
-├── app/
-│   ├── traffic-light/                         # Standalone presentational component
-│   │   ├── traffic-light.component.ts         # Component logic, signal inputs, computed states
-│   │   ├── traffic-light.component.html       # Hooded lamp fixtures, lenses, and accessibility
-│   │   ├── traffic-light.component.css        # Pure CSS housing, reflection, and glow optics
-│   │   └── traffic-light.component.spec.ts    # Unit tests for visual light states
-│   │
-│   ├── traffic-system/                        # State machine and business logic
-│   │   ├── traffic-system.models.ts           # Strongly typed enums & interfaces
-│   │   ├── traffic-system.constants.ts        # OFF_STATE, INITIAL_ON_STATE, SAFE_TRAFFIC_CYCLE
-│   │   ├── traffic-system.service.ts          # State machine, signal stores, invariant validation
-│   │   └── traffic-system.service.spec.ts     # 25 thorough unit tests for all safety rules
-│   │
-│   ├── app.ts                                 # Root orchestrator component
-│   ├── app.html                               # Intersection view, dashboard controls, telemetry
-│   ├── app.css                                # Layout, asphalt crossroad, crosswalk markings
-│   └── app.spec.ts                            # Integration tests for UI and user actions
-│
-├── styles.css                                 # Global CSS baseline & typography
-└── main.ts                                    # Application bootstrap
-```
+### Power States
+* **ON State (`INITIAL_ON_STATE`)**: Deterministically starts at Step 0 (`North/South: GREEN, East/West: RED`).
+* **OFF State (`OFF_STATE`)**: Both axes are unpowered (`North/South: OFF, East/West: OFF`).
 
 ---
 
-## 7. Running the Project
+## Safety invariant
 
-### Prerequisites
-* Node.js v20+
-* npm v10+
+The state machine strictly enforces the following core safety invariants:
 
-### Installation
-```bash
-npm install
-```
+1. **Mutual Exclusion (No Simultaneous GREEN)**:
+   `northSouth === GREEN && eastWest === GREEN` is strictly forbidden and rejected. Both intersecting axes can never have green clearance simultaneously.
 
-### Start Development Server
-```bash
-npm start
-```
-Navigate to `http://localhost:4200/` in your browser.
+2. **Facing Pair Synchronization**:
+   North and South lights always display identical states, and East and West lights always display identical states, enforced by the two-axis architecture.
 
-### Run Unit Tests
-```bash
-npm test
-```
-Runs the complete test suite (42 unit tests) using Angular 21's built-in Vitest runner:
-```bash
-npm test -- --watch=false
-```
+3. **Mandatory Transitional Buffer (No Direct RED ↔ GREEN)**:
+   Direct jumps between RED and GREEN without passing through YELLOW are rejected by the transition validator.
 
-### Production Build
-```bash
-npm run build
-```
+4. **All-Red Clearance Intervals**:
+   Dedicated all-red intervals (`RED` on both axes) must occur before releasing the perpendicular flow, allowing vehicles in the intersection to clear safely.
 
----
+5. **Deterministic Safe Startup**:
+   When transitioning from OFF to ON, the system must start in a safe operational state (`GREEN/RED` or `RED/GREEN`). Starting with `YELLOW` on either axis is rejected.
 
-## 8. Design Decisions & Highlights
+6. **Power Cohesion**:
+   When the system is OFF, all lights must be OFF. Mixed states where one axis is active and the other is OFF are prohibited.
 
-1. **North & South Light Design**: North and South approaches support an authentic horizontal overhead gantry design (`[ RED | YELLOW | GREEN ]`) alongside the traditional vertical post design. This prevents vertical crowding across the crossroad, completely eliminates occlusion of the header and footer pills, and provides natural spatial alignment across the 4-way intersection.
-2. **Angular Signals**: State is represented via `signal<TrafficSystemState>`, and individual lights are derived using `computed()`. This ensures zero manual change-detection gymnastics and optimal rendering performance with `OnPush`.
-3. **Immutability**: `OFF_STATE`, `INITIAL_ON_STATE`, and `SAFE_TRAFFIC_CYCLE` are deeply frozen with `Object.freeze()` to prevent runtime tampering.
-4. **Deterministic Step Control**: Transitions through the safe operating cycle are controlled via explicit manual stepping (`nextState()`), ensuring transparent verification and total control over state transitions without unsupervised timer drift.
-5. **Safety-First Dispatcher**: The `requestTransition()` method checks `isValidTransition()` *before* modifying state. If invalid, a warning is logged and the existing valid state is left completely intact.
-6. **No External Component Libraries**: 100% native HTML and CSS used for the hooded traffic lights, glow illumination, crossroad markings, and dashboard cards.
+7. **Fail-Safe Pre-Validation**:
+   State transitions are pre-validated before any mutation occurs. If an invalid or unsafe transition is requested, the system rejects it, logs a warning, and maintains the current safe state intact.
