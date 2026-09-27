@@ -1,0 +1,202 @@
+.traffic-light-fixture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.fixture-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.position-badge {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #f1f5f9;
+  background-color: #1e293b;
+  padding: 2px 10px;
+  border-radius: 4px;
+  border: 1px solid #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.axis-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Traffic Light Housing Frame */
+.light-housing {
+  background: linear-gradient(145deg, #1c1c1f, #111113);
+  border-radius: 20px;
+  border: 3px solid #2d2d34;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.6),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.7);
+  display: flex;
+  position: relative;
+  transition: opacity 0.3s ease;
+}
+
+/* Vertical Orientation (East, West, or vertical mode) */
+.orientation-vertical .light-housing {
+  flex-direction: column;
+  padding: 10px 8px;
+  gap: 8px;
+}
+
+/* Horizontal Orientation (North, South overhead gantry design) */
+.orientation-horizontal .light-housing {
+  flex-direction: row;
+  padding: 8px 12px;
+  gap: 10px;
+  align-items: center;
+}
+
+.housing-off {
+  opacity: 0.8;
+}
+
+/* Visor / Cowl structure over each lamp */
+.visor-lamp {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.visor-hood {
+  position: absolute;
+  top: -4px;
+  width: 48px;
+  height: 18px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  border-top: 3px solid #3b3b44;
+  border-left: 2px solid #2b2b32;
+  border-right: 2px solid #2b2b32;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.85;
+}
+
+/* Common Lamp Properties */
+.lamp {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  position: relative;
+  border: 2px solid #1a1a1c;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.inner-reflection {
+  position: absolute;
+  top: 4px;
+  left: 7px;
+  width: 12px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(-25deg);
+  pointer-events: none;
+}
+
+/* Inactive / Dim States (Fresnel lens texture) */
+.lamp-red {
+  background: radial-gradient(circle at 35% 35%, #421010, #220505);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.lamp-yellow {
+  background: radial-gradient(circle at 35% 35%, #3d330c, #1f1a04);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.lamp-green {
+  background: radial-gradient(circle at 35% 35%, #0d381e, #041a0d);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+/* Active / Illuminated States */
+.lamp-red.active {
+  background: radial-gradient(circle at 40% 40%, #ff6b6b 0%, #e01b24 45%, #990000 100%);
+  border-color: #ff8c8c;
+  box-shadow:
+    0 0 15px rgba(255, 59, 48, 0.9),
+    0 0 35px rgba(255, 59, 48, 0.6),
+    inset 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.lamp-yellow.active {
+  background: radial-gradient(circle at 40% 40%, #fff066 0%, #f6ad0a 45%, #b57a02 100%);
+  border-color: #ffdf70;
+  box-shadow:
+    0 0 15px rgba(255, 204, 0, 0.9),
+    0 0 35px rgba(255, 204, 0, 0.6),
+    inset 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+.lamp-green.active {
+  background: radial-gradient(circle at 40% 40%, #68f099 0%, #10b981 45%, #047857 100%);
+  border-color: #79f4b5;
+  box-shadow:
+    0 0 15px rgba(16, 185, 129, 0.9),
+    0 0 35px rgba(16, 185, 129, 0.6),
+    inset 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Lamp active inner highlight */
+.lamp.active .inner-reflection {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Footer State Indicator Badge */
+.fixture-footer {
+  margin-top: 2px;
+}
+
+.state-pill {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.state-pill.state-red {
+  color: #ff8c8c;
+  background-color: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+}
+
+.state-pill.state-yellow {
+  color: #fde047;
+  background-color: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+}
+
+.state-pill.state-green {
+  color: #86efac;
+  background-color: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.state-pill.state-off {
+  color: #64748b;
+  background-color: rgba(100, 116, 139, 0.15);
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}

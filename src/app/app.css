@@ -1,0 +1,686 @@
+:host {
+  display: block;
+}
+
+.system-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Header Section */
+.system-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: linear-gradient(180deg, #131b2e 0%, #0f172a 100%);
+  padding: 20px 28px;
+  border-radius: 16px;
+  border: 1px solid #1e293b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.header-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #38bdf8;
+  background-color: rgba(56, 189, 248, 0.1);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  margin-bottom: 6px;
+  width: fit-content;
+}
+
+.system-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #f1f5f9;
+  margin: 0 0 4px;
+}
+
+.system-subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Status Ribbon */
+.status-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #1e293b;
+}
+
+.status-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.pulse-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #64748b;
+}
+
+.chip-on {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+
+.chip-on .pulse-indicator {
+  background-color: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.chip-off {
+  background-color: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.25);
+  color: #94a3b8;
+}
+
+.chip-safe {
+  background-color: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+.chip-unsafe {
+  background-color: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.chip-telemetry {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+.telemetry-label {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.telemetry-value strong {
+  margin-left: 2px;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.color-red { color: #f87171; }
+.color-yellow { color: #facc15; }
+.color-green { color: #4ade80; }
+.color-off { color: #94a3b8; }
+
+/* Main Two-Column Layout */
+.main-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Control Panel */
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background-color: #131b2e;
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1e293b;
+}
+
+/* Control Buttons */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #ffffff;
+  user-select: none;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.btn-power {
+  background-color: #059669;
+  border-color: #10b981;
+}
+
+.btn-power:hover:not(:disabled) {
+  background-color: #047857;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-power-off {
+  background-color: #dc2626;
+  border-color: #ef4444;
+}
+
+.btn-power-off:hover:not(:disabled) {
+  background-color: #b91c1c;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+}
+
+.btn-step {
+  background-color: #2563eb;
+  border-color: #3b82f6;
+}
+
+.btn-step:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-cycle {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.btn-cycle:hover:not(:disabled) {
+  background-color: #1e293b;
+  border-color: #475569;
+}
+
+.btn-cycling {
+  background-color: #7c2d12;
+  border-color: #ea580c;
+  color: #ffedd5;
+  animation: pulse-border 2s infinite;
+}
+
+.btn-orientation {
+  background-color: #1e1b4b;
+  border-color: #4338ca;
+  color: #c7d2fe;
+}
+
+.btn-orientation:hover:not(:disabled) {
+  background-color: #312e81;
+  border-color: #6366f1;
+}
+
+@keyframes pulse-border {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(234, 88, 12, 0); }
+}
+
+.interval-setting {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.control-label {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.select-input {
+  background-color: #0f172a;
+  color: #f1f5f9;
+  border: 1px solid #334155;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+}
+
+.select-input:focus {
+  border-color: #38bdf8;
+}
+
+/* Phase Telemetry Card */
+.phase-banner {
+  background-color: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.phase-step-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+
+.phase-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  line-height: 1.4;
+}
+
+.logical-axes-display {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.axis-box {
+  background-color: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color 0.2s ease;
+}
+
+.axis-box.active-axis {
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.axis-header {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.axis-state-tag {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.state-tag-red { color: #f87171; }
+.state-tag-yellow { color: #facc15; }
+.state-tag-green { color: #4ade80; }
+.state-tag-off { color: #64748b; }
+
+.axis-derived {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* Invariants Card */
+.invariants-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.invariant-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+}
+
+.check-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.invariant-text strong {
+  display: block;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+.invariant-text small {
+  display: block;
+  color: #94a3b8;
+  font-size: 11px;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* Right Column: 4-Way Intersection UI */
+.intersection-view {
+  background: radial-gradient(circle at center, #151d30 0%, #0a0e1a 100%);
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 32px 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
+  min-height: 680px;
+}
+
+.intersection-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.intersection-container {
+  display: grid;
+  grid-template-columns: 140px 260px 140px;
+  grid-template-rows: auto 260px auto;
+  align-items: center;
+  justify-items: center;
+  gap: 20px;
+}
+
+.intersection-container.layout-vertical-ns {
+  grid-template-rows: auto 260px auto;
+  gap: 24px;
+}
+
+/* Light Placement Grid Slots */
+.slot-north {
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 5;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.slot-west {
+  grid-column: 1;
+  grid-row: 2;
+  z-index: 5;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.slot-east {
+  grid-column: 3;
+  grid-row: 2;
+  z-index: 5;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.slot-south {
+  grid-column: 2;
+  grid-row: 3;
+  z-index: 5;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Realistic Asphalt Crossroad Center */
+.road-intersection-core {
+  grid-column: 2;
+  grid-row: 2;
+  width: 260px;
+  height: 260px;
+  background-color: #141720;
+  border-radius: 12px;
+  position: relative;
+  border: 2px solid #232938;
+  box-shadow:
+    inset 0 0 25px rgba(0, 0, 0, 0.8),
+    0 8px 25px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Road surfaces crossing at center */
+.road-strip {
+  position: absolute;
+  background-color: #1e2330;
+}
+
+.road-vertical {
+  width: 170px;
+  top: 0;
+  bottom: 0;
+  left: 45px;
+  border-left: 2px solid #333d52;
+  border-right: 2px solid #333d52;
+}
+
+.road-horizontal {
+  height: 170px;
+  left: 0;
+  right: 0;
+  top: 45px;
+  border-top: 2px solid #333d52;
+  border-bottom: 2px solid #333d52;
+}
+
+/* Dashed lane divider lines */
+.road-center-line {
+  position: absolute;
+}
+
+.vertical-line {
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 1px);
+  width: 2px;
+  border-left: 2px dashed rgba(255, 204, 0, 0.4);
+}
+
+.horizontal-line {
+  left: 0;
+  right: 0;
+  top: calc(50% - 1px);
+  height: 2px;
+  border-top: 2px dashed rgba(255, 204, 0, 0.4);
+}
+
+/* Stop Bars (Solid white lines where cars halt) */
+.stop-bar {
+  position: absolute;
+  background-color: #ffffff;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+  opacity: 0.85;
+}
+
+.stop-bar-north {
+  top: 28px;
+  left: 10px;
+  right: 10px;
+  height: 4px;
+}
+
+.stop-bar-south {
+  bottom: 28px;
+  left: 10px;
+  right: 10px;
+  height: 4px;
+}
+
+.stop-bar-west {
+  left: 28px;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+}
+
+.stop-bar-east {
+  right: 28px;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+}
+
+/* Pedestrian Crosswalks (Crisp Zebra Stripes) */
+.crosswalk {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.crosswalk-north {
+  top: 6px;
+  left: 55px;
+  width: 150px;
+  height: 16px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.7) 0,
+    rgba(255, 255, 255, 0.7) 12px,
+    transparent 12px,
+    transparent 20px
+  );
+}
+
+.crosswalk-south {
+  bottom: 6px;
+  left: 55px;
+  width: 150px;
+  height: 16px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.7) 0,
+    rgba(255, 255, 255, 0.7) 12px,
+    transparent 12px,
+    transparent 20px
+  );
+}
+
+.crosswalk-west {
+  left: 6px;
+  top: 55px;
+  height: 150px;
+  width: 16px;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.7) 0,
+    rgba(255, 255, 255, 0.7) 12px,
+    transparent 12px,
+    transparent 20px
+  );
+}
+
+.crosswalk-east {
+  right: 6px;
+  top: 55px;
+  height: 150px;
+  width: 16px;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.7) 0,
+    rgba(255, 255, 255, 0.7) 12px,
+    transparent 12px,
+    transparent 20px
+  );
+}
+
+/* Center Junction Hub */
+.intersection-center {
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(circle, #252c3c 0%, #171b26 100%);
+  border: 1px solid #374154;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  z-index: 3;
+}
+
+.junction-circle {
+  width: 32px;
+  height: 32px;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+}
+
+.axis-pair-indicator {
+  position: absolute;
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 800;
+  color: #94a3b8;
+  background-color: #0b0f19;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #334155;
+  z-index: 4;
+}
+
+.indicator-vertical {
+  top: -10px;
+}
+
+.indicator-horizontal {
+  left: -12px;
+}

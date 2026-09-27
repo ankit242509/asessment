@@ -1,0 +1,60 @@
+<div
+  class="traffic-light-fixture"
+  [class.orientation-horizontal]="isHorizontal()"
+  [class.orientation-vertical]="!isHorizontal()"
+  [attr.data-position]="position()"
+>
+  <div class="fixture-header">
+    <span class="position-badge">{{ position() }}</span>
+    @if (axisLabel()) {
+      <span class="axis-badge">{{ axisLabel() }}</span>
+    }
+  </div>
+
+  <div class="light-housing" [class.housing-off]="isOff()">
+    <!-- Red Light (Top in vertical, Left in horizontal) -->
+    <div class="visor-lamp red-unit">
+      <div class="visor-hood" aria-hidden="true"></div>
+      <div
+        class="lamp lamp-red"
+        [class.active]="isRedActive()"
+        [attr.aria-label]="position() + ' Red Light: ' + (isRedActive() ? 'ON' : 'OFF')"
+        role="status"
+      >
+        <div class="inner-reflection"></div>
+      </div>
+    </div>
+
+    <!-- Yellow Light (Middle) -->
+    <div class="visor-lamp yellow-unit">
+      <div class="visor-hood" aria-hidden="true"></div>
+      <div
+        class="lamp lamp-yellow"
+        [class.active]="isYellowActive()"
+        [attr.aria-label]="position() + ' Yellow Light: ' + (isYellowActive() ? 'ON' : 'OFF')"
+        role="status"
+      >
+        <div class="inner-reflection"></div>
+      </div>
+    </div>
+
+    <!-- Green Light (Bottom in vertical, Right in horizontal) -->
+    <div class="visor-lamp green-unit">
+      <div class="visor-hood" aria-hidden="true"></div>
+      <div
+        class="lamp lamp-green"
+        [class.active]="isGreenActive()"
+        [attr.aria-label]="position() + ' Green Light: ' + (isGreenActive() ? 'ON' : 'OFF')"
+        role="status"
+      >
+        <div class="inner-reflection"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixture-footer">
+    <span class="state-pill" [class]="'state-' + state().toLowerCase()">
+      {{ state() }}
+    </span>
+  </div>
+</div>
