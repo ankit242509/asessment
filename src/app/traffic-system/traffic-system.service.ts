@@ -1,26 +1,14 @@
-import { Injectable, OnDestroy, computed, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 import {
-  DEFAULT_TRANSITION_INTERVAL_MS,
   INITIAL_ON_STATE,
   OFF_STATE,
   SAFE_TRAFFIC_CYCLE,
 } from './traffic-system.constants';
 import { LightState, TrafficSystemState } from './traffic-system.models';
-
-/**
- * TrafficSystemService acts as the central State Machine and Safety Guardian.
- *
- * Design Principles:
- * 1. Single Responsibility: Houses all traffic rules, safety validations, and transitions.
- * 2. Pre-Validation Enforcement: Never updates internal state unless the requested transition passes all invariants.
- * 3. Prevention Over Detection: Manages paired directions as logical axes (northSouth / eastWest)
- *    so opposite lights cannot physically disagree.
- * 4. Reactive State: Uses Angular Signals for fine-grained reactivity and computed physical states.
- */
 @Injectable({
   providedIn: 'root',
 })
-export class TrafficSystemService implements OnDestroy {
+export class TrafficSystemService {
   /**
    * Internal mutable state signal initialized to the safe initial state (NS=GREEN, EW=RED).
    */
@@ -36,23 +24,6 @@ export class TrafficSystemService implements OnDestroy {
    */
   private readonly _currentCycleIndex = signal<number>(0);
   public readonly currentCycleIndex = this._currentCycleIndex.asReadonly();
-
-  /**
-   * Automatic cycling status signal.
-   */
-  private readonly _isAutoCycling = signal<boolean>(false);
-  public readonly isAutoCycling = this._isAutoCycling.asReadonly();
-
-  /**
-   * Configurable transition interval in milliseconds.
-   */
-  private readonly _transitionIntervalMs = signal<number>(DEFAULT_TRANSITION_INTERVAL_MS);
-  public readonly transitionIntervalMs = this._transitionIntervalMs.asReadonly();
-
-  /**
-   * Active timer reference for automatic cycle.
-   */
-  private timerId: ReturnType<typeof setInterval> | null = null;
 
   // --- Computed Signals for UI and Physical Light Derivations ---
 
@@ -93,12 +64,6 @@ export class TrafficSystemService implements OnDestroy {
    */
   public readonly westLight = computed<LightState>(() => this._state().eastWest);
 
-  // --- Lifecycle Hook ---
-
-  public ngOnDestroy(): void {
-    this.stopAutoCycle();
-  }
-
   // --- Public State Transition Methods ---
 
   /**
@@ -115,10 +80,8 @@ export class TrafficSystemService implements OnDestroy {
 
   /**
    * Powers the system OFF to the safe OFF_STATE.
-   * Automatically stops any running auto-cycle.
    */
   public turnOff(): boolean {
-    this.stopAutoCycle();
     return this.requestTransition(OFF_STATE);
   }
 
@@ -146,62 +109,6 @@ export class TrafficSystemService implements OnDestroy {
       this._currentCycleIndex.set(nextIndex);
     }
     return success;
-  }
-
-  /**
-   * Starts automatic cycling through the safe state machine sequence.
-   * Cleans up any existing interval before starting to prevent duplicate timers.
-   */
-  public startAutoCycle(intervalMs?: number): void {
-    if (intervalMs && intervalMs > 0) {
-      this._transitionIntervalMs.set(intervalMs);
-    }
-
-    // Ensure system is ON before auto-cycling
-    if (!this.isOn()) {
-      const turnedOn = this.turnOn();
-      if (!turnedOn) return;
-    }
-
-    this.stopAutoCycle(); // Clean up existing timer if any
-    this._isAutoCycling.set(true);
-
-    this.timerId = setInterval(() => {
-      this.nextState();
-    }, this._transitionIntervalMs());
-  }
-
-  /**
-   * Stops the automatic cycle timer.
-   */
-  public stopAutoCycle(): void {
-    if (this.timerId !== null) {
-      clearInterval(this.timerId);
-      this.timerId = null;
-    }
-    this._isAutoCycling.set(false);
-  }
-
-  /**
-   * Toggles the automatic cycle on or off.
-   */
-  public toggleAutoCycle(): void {
-    if (this._isAutoCycling()) {
-      this.stopAutoCycle();
-    } else {
-      this.startAutoCycle();
-    }
-  }
-
-  /**
-   * Updates the transition interval and restarts timer if actively running.
-   */
-  public setTransitionInterval(ms: number): void {
-    if (ms < 500) return;
-    this._transitionIntervalMs.set(ms);
-    if (this._isAutoCycling()) {
-      this.startAutoCycle(ms);
-    }
   }
 
   /**
@@ -236,14 +143,6 @@ export class TrafficSystemService implements OnDestroy {
   }
 
   // --- Pure Safety & Validation Logic ---
-
-  /**
-   * Validates whether a given static state satisfies all intersection invariants.
-   *
-   * Invariants checked:
-   * 1. Mutual Exclusion: Both axes can NEVER be GREEN at the same time.
-   * 2. System Power Cohesion: One axis cannot be OFF while the other is active.
-   */
   public isSafeState(state: TrafficSystemState): boolean {
     if (!state) return false;
 
@@ -264,17 +163,6 @@ export class TrafficSystemService implements OnDestroy {
 
   /**
    * Validates whether moving from currentState to nextState is permitted and safe.
-   *
-   * Validations enforced:
-   * 1. Target state must be an intrinsically safe state (Rule 2 & 6).
-   * 2. Shutdown: Transitioning to OFF_STATE (both OFF) is always permitted.
-   * 3. Startup: Transitioning from OFF_STATE requires:
-   *    - Neither axis starts on YELLOW (Rule 7).
-   *    - Starts on a valid operational combination (RED/GREEN or GREEN/RED).
-   * 4. Operational Transitions:
-   *    - Direct RED -> GREEN is rejected (Rule 3).
-   *    - Direct GREEN -> RED is rejected (Rule 4).
-   *    - Every axis transition must follow RED -> YELLOW -> GREEN or GREEN -> YELLOW -> RED (Rule 5).
    */
   public isValidTransition(
     currentState: TrafficSystemState,
@@ -329,10 +217,6 @@ export class TrafficSystemService implements OnDestroy {
 
   /**
    * Validates state change for an individual axis.
-   * Enforces:
-   * - RED -> GREEN rejected (Rule 3)
-   * - GREEN -> RED rejected (Rule 4)
-   * - YELLOW is strictly transitional between RED and GREEN (Rule 5)
    */
   public isValidAxisTransition(current: LightState, next: LightState): boolean {
     // Unchanged state is valid

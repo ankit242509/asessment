@@ -56,7 +56,7 @@ The solution adheres to a strict unidirectional data flow and multi-tiered safet
    - Pure UI components using `ChangeDetectionStrategy.OnPush`.
    - Render the physical fixtures (lenses, visors, glowing illumination) and road markings.
    - Display real-time telemetry (active phase, power status, invariant verification status).
-   - Trigger user commands (`turnOn()`, `turnOff()`, `nextState()`, `toggleAutoCycle()`).
+   - Trigger user commands (`turnOn()`, `turnOff()`, `nextState()`).
 
 2. **State Management & State Machine (`src/app/traffic-system/traffic-system.service.ts`)**:
    - Central authority of application truth using Angular Signals (`signal<TrafficSystemState>`).
@@ -210,6 +210,6 @@ npm run build
 1. **North & South Light Design**: North and South approaches support an authentic horizontal overhead gantry design (`[ RED | YELLOW | GREEN ]`) alongside the traditional vertical post design. This prevents vertical crowding across the crossroad, completely eliminates occlusion of the header and footer pills, and provides natural spatial alignment across the 4-way intersection.
 2. **Angular Signals**: State is represented via `signal<TrafficSystemState>`, and individual lights are derived using `computed()`. This ensures zero manual change-detection gymnastics and optimal rendering performance with `OnPush`.
 3. **Immutability**: `OFF_STATE`, `INITIAL_ON_STATE`, and `SAFE_TRAFFIC_CYCLE` are deeply frozen with `Object.freeze()` to prevent runtime tampering.
-4. **Timer Safety**: Automatic cycling interval timers are automatically cleared on `turnOff()`, when starting a new cycle, and on service `ngOnDestroy()`. This guarantees no memory leaks or duplicate overlapping intervals.
+4. **Deterministic Step Control**: Transitions through the safe operating cycle are controlled via explicit manual stepping (`nextState()`), ensuring transparent verification and total control over state transitions without unsupervised timer drift.
 5. **Safety-First Dispatcher**: The `requestTransition()` method checks `isValidTransition()` *before* modifying state. If invalid, a warning is logged and the existing valid state is left completely intact.
 6. **No External Component Libraries**: 100% native HTML and CSS used for the hooded traffic lights, glow illumination, crossroad markings, and dashboard cards.

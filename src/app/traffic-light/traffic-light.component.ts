@@ -5,10 +5,7 @@ import { IntersectionPosition, LightState } from '../traffic-system/traffic-syst
  * TrafficLightComponent renders a single physical traffic light fixture.
  *
  * It is a purely presentational (dumb) standalone component:
- * - Accepts input signals for position, state, axis label, and orientation.
- * - Supports both 'vertical' (traditional post) and 'horizontal' (overhead gantry) designs.
- * - When state is OFF, all lenses remain unlit.
- * - Follows OnPush change detection strategy for optimal performance.
+ * - Accepts input signals for position, state, axis label.
  */
 @Component({
   selector: 'app-traffic-light',
@@ -35,12 +32,6 @@ export class TrafficLightComponent {
   public readonly axisLabel = input<string>('');
 
   /**
-   * Visual layout orientation: 'vertical' (default) or 'horizontal'.
-   * Horizontal layout is particularly suited for overhead North & South approaches.
-   */
-  public readonly orientation = input<'vertical' | 'horizontal'>('vertical');
-
-  /**
    * Computed boolean indicating if the RED lamp should illuminate.
    */
   public readonly isRedActive = computed<boolean>(() => this.state() === LightState.RED);
@@ -59,9 +50,4 @@ export class TrafficLightComponent {
    * Computed boolean indicating if all lamps are unpowered.
    */
   public readonly isOff = computed<boolean>(() => this.state() === LightState.OFF);
-
-  /**
-   * Computed boolean for horizontal orientation helper.
-   */
-  public readonly isHorizontal = computed<boolean>(() => this.orientation() === 'horizontal');
 }

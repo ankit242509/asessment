@@ -22,7 +22,6 @@ export enum IntersectionPosition {
 /**
  * Logical traffic axes in the intersection.
  * Instead of tracking four independent mutable states, the system groups
- * facing pairs into two orthogonal logical axes.
  */
 export enum TrafficAxis {
   NORTH_SOUTH = 'NORTH_SOUTH',

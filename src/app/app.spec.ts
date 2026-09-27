@@ -20,10 +20,6 @@ describe('App Component', () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => {
-    trafficService.stopAutoCycle();
-  });
-
   it('should create the App component', () => {
     expect(component).toBeTruthy();
   });
@@ -82,16 +78,14 @@ describe('App Component', () => {
     expect(trafficService.eastLight()).toBe(LightState.RED);
   });
 
-  it('should disable Next State and Auto Cycle buttons when system is OFF', () => {
+  it('should disable Next State button when system is OFF', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     trafficService.turnOff();
     fixture.detectChanges();
 
     const stepBtn = compiled.querySelector('.btn-step') as HTMLButtonElement;
-    const cycleBtn = compiled.querySelector('.btn-cycle') as HTMLButtonElement;
 
     expect(stepBtn.disabled).toBe(true);
-    expect(cycleBtn.disabled).toBe(true);
   });
 
   it('should advance to the next state when Next State button is clicked', () => {
@@ -107,42 +101,5 @@ describe('App Component', () => {
     expect(trafficService.currentCycleIndex()).toBe(1);
     expect(trafficService.state().northSouth).toBe(LightState.YELLOW);
     expect(trafficService.state().eastWest).toBe(LightState.RED);
-  });
-
-  it('should toggle auto-cycle when Auto Cycle button is clicked', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const cycleBtn = compiled.querySelector('.btn-cycle') as HTMLButtonElement;
-
-    expect(trafficService.isAutoCycling()).toBe(false);
-
-    cycleBtn.click();
-    fixture.detectChanges();
-    expect(trafficService.isAutoCycling()).toBe(true);
-
-    cycleBtn.click();
-    fixture.detectChanges();
-    expect(trafficService.isAutoCycling()).toBe(false);
-  });
-
-  it('should update transition interval when select option changes', () => {
-    const select = fixture.nativeElement.querySelector('#interval-select') as HTMLSelectElement;
-    select.value = '4000';
-    select.dispatchEvent(new Event('change'));
-    fixture.detectChanges();
-
-    expect(trafficService.transitionIntervalMs()).toBe(4000);
-  });
-
-  it('should toggle North/South orientation between horizontal and vertical', () => {
-    const orientationBtn = fixture.nativeElement.querySelector('.btn-orientation') as HTMLButtonElement;
-    expect(component.northSouthOrientation()).toBe('horizontal');
-
-    orientationBtn.click();
-    fixture.detectChanges();
-    expect(component.northSouthOrientation()).toBe('vertical');
-
-    orientationBtn.click();
-    fixture.detectChanges();
-    expect(component.northSouthOrientation()).toBe('horizontal');
   });
 });

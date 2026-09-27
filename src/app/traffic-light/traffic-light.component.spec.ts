@@ -98,16 +98,4 @@ describe('TrafficLightComponent', () => {
     expect(compiled.querySelector('.lamp-green')?.classList.contains('active')).toBe(false);
     expect(compiled.querySelector('.light-housing')?.classList.contains('housing-off')).toBe(true);
   });
-
-  it('should support horizontal orientation for overhead gantry design', () => {
-    fixture.componentRef.setInput('position', IntersectionPosition.NORTH);
-    fixture.componentRef.setInput('state', LightState.GREEN);
-    fixture.componentRef.setInput('orientation', 'horizontal');
-    fixture.detectChanges();
-
-    expect(component.isHorizontal()).toBe(true);
-    const compiled = fixture.nativeElement as HTMLElement;
-    const fixtureEl = compiled.querySelector('.traffic-light-fixture');
-    expect(fixtureEl?.classList.contains('orientation-horizontal')).toBe(true);
-  });
 });

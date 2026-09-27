@@ -69,60 +69,12 @@
             <span class="btn-icon">⏭️</span>
             <span>Next State</span>
           </button>
-
-          <!-- Auto-Cycle Toggle Button -->
-          <button
-            type="button"
-            class="btn btn-cycle"
-            [class.btn-cycling]="trafficService.isAutoCycling()"
-            [disabled]="!trafficService.isOn()"
-            (click)="onToggleAutoCycle()"
-          >
-            <span class="btn-icon">{{ trafficService.isAutoCycling() ? '⏸️' : '▶️' }}</span>
-            <span>{{ trafficService.isAutoCycling() ? 'Pause Auto Cycle' : 'Start Auto Cycle' }}</span>
-          </button>
-
-          <!-- North/South Design Toggle Button -->
-          <button
-            type="button"
-            class="btn btn-orientation"
-            (click)="toggleNorthSouthOrientation()"
-            title="Switch North & South lights between horizontal overhead gantry and vertical post design"
-          >
-            <span class="btn-icon">📐</span>
-            <span>N/S Design: {{ northSouthOrientation() === 'horizontal' ? 'Horizontal (Gantry)' : 'Vertical (Post)' }}</span>
-          </button>
-        </div>
-
-        <!-- Interval Timing Configuration -->
-        <div class="interval-setting">
-          <label for="interval-select" class="control-label">Cycle Interval:</label>
-          <select
-            id="interval-select"
-            class="select-input"
-            [value]="trafficService.transitionIntervalMs()"
-            (change)="onSelectInterval($event)"
-          >
-            <option [value]="1500">1.5 seconds (Fast)</option>
-            <option [value]="2500">2.5 seconds (Standard)</option>
-            <option [value]="4000">4.0 seconds (Slow)</option>
-          </select>
         </div>
       </section>
 
       <!-- Active Phase & Safe Sequence Card -->
       <section class="card phase-card">
         <h2 class="card-title">Current Phase Telemetry</h2>
-        <div class="phase-banner">
-          <div class="phase-step-badge">
-            @if (trafficService.isOn()) {
-              Step {{ trafficService.currentCycleIndex() + 1 }} of {{ totalCycleSteps }}
-            } @else {
-              STANDBY
-            }
-          </div>
-          <div class="phase-text">{{ phaseDescription() }}</div>
-        </div>
 
         <div class="logical-axes-display">
           <div class="axis-box" [class.active-axis]="trafficService.state().northSouth === 'GREEN'">
@@ -143,53 +95,18 @@
         </div>
       </section>
 
-      <!-- Safety Invariants Checklist Card -->
-      <section class="card invariants-card">
-        <h2 class="card-title">Safety Invariants Enforced</h2>
-        <ul class="invariants-list">
-          <li class="invariant-item" [class.valid]="isSimultaneousGreenPrevented()">
-            <span class="check-icon">✓</span>
-            <div class="invariant-text">
-              <strong>Simultaneous GREEN Impossible</strong>
-              <small>North/South and East/West are mutually exclusive.</small>
-            </div>
-          </li>
-          <li class="invariant-item" [class.valid]="isNorthSouthSynchronized() && isEastWestSynchronized()">
-            <span class="check-icon">✓</span>
-            <div class="invariant-text">
-              <strong>Facing Light Pairs Guaranteed Equal</strong>
-              <small>North === South &amp; East === West structurally enforced by axis model.</small>
-            </div>
-          </li>
-          <li class="invariant-item valid">
-            <span class="check-icon">✓</span>
-            <div class="invariant-text">
-              <strong>Buffer Through YELLOW Mandatory</strong>
-              <small>Direct RED ↔ GREEN transitions strictly rejected by state machine.</small>
-            </div>
-          </li>
-          <li class="invariant-item valid">
-            <span class="check-icon">✓</span>
-            <div class="invariant-text">
-              <strong>Fail-Safe Pre-Validation</strong>
-              <small>Any invalid transition is rejected before state mutation occurs.</small>
-            </div>
-          </li>
-        </ul>
-      </section>
     </aside>
 
     <!-- Right Column: Visual 4-Way Intersection -->
     <section class="intersection-view">
       <div class="intersection-wrapper">
-        <div class="intersection-container" [class.layout-vertical-ns]="northSouthOrientation() === 'vertical'">
+        <div class="intersection-container">
           <!-- North Light -->
           <div class="light-slot slot-north">
             <app-traffic-light
               [position]="Position.NORTH"
               [state]="trafficService.northLight()"
               axisLabel="Axis 1 (N/S)"
-              [orientation]="northSouthOrientation()"
             />
           </div>
 
@@ -251,7 +168,6 @@
               [position]="Position.SOUTH"
               [state]="trafficService.southLight()"
               axisLabel="Axis 1 (N/S)"
-              [orientation]="northSouthOrientation()"
             />
           </div>
         </div>

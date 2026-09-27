@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import {
-  DEFAULT_TRANSITION_INTERVAL_MS,
   INITIAL_ON_STATE,
   OFF_STATE,
   SAFE_TRAFFIC_CYCLE,
@@ -16,10 +15,6 @@ describe('TrafficSystemService', () => {
       providers: [TrafficSystemService],
     });
     service = TestBed.inject(TrafficSystemService);
-  });
-
-  afterEach(() => {
-    service.stopAutoCycle();
   });
 
   describe('Initial State', () => {
@@ -272,38 +267,5 @@ describe('TrafficSystemService', () => {
       expect(service.state()).toEqual(SAFE_TRAFFIC_CYCLE[0]);
     });
   });
-
-  describe('Auto-Cycle Management (Section 14)', () => {
-    it('should start and stop automatic cycling without duplicate intervals', () => {
-      expect(service.isAutoCycling()).toBe(false);
-
-      service.startAutoCycle(1000);
-      expect(service.isAutoCycling()).toBe(true);
-
-      // Calling start again should not cause duplicate timers
-      service.startAutoCycle(1000);
-      expect(service.isAutoCycling()).toBe(true);
-
-      service.stopAutoCycle();
-      expect(service.isAutoCycling()).toBe(false);
-    });
-
-    it('should automatically turn the system ON if auto-cycle is started while OFF', () => {
-      service.turnOff();
-      expect(service.isOn()).toBe(false);
-
-      service.startAutoCycle(1000);
-      expect(service.isOn()).toBe(true);
-      expect(service.isAutoCycling()).toBe(true);
-    });
-
-    it('should stop auto-cycling when the system is turned OFF', () => {
-      service.startAutoCycle(1000);
-      expect(service.isAutoCycling()).toBe(true);
-
-      service.turnOff();
-      expect(service.isAutoCycling()).toBe(false);
-      expect(service.isOn()).toBe(false);
-    });
-  });
 });
+
